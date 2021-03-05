@@ -29,6 +29,8 @@ export default function Orders({ navigation }) {
 	}
 
 	function renderItem({ item }) {
+		const profit = (item.qty < 0 ) ? (Math.abs(item.qty) * item.price) - (Math.abs(item.qty) * item.avg_price) : (0);
+
 		return (
 			<View style={styles.itemContainer}>
 				<View style={styles.headerContainer}>
@@ -51,6 +53,16 @@ export default function Orders({ navigation }) {
 						<Text style={styles.textTitle}>Total</Text>
 						<Text style={styles.textData}>R$ {formatMoney(item.qty * item.price)}</Text>
 					</View>
+				</View>
+
+				<View style={styles.profitContainer}>
+					{profit > 0 && (
+						<Text style={styles.textProfitPositive}>Lucro: R$ {formatMoney(profit)}</Text>
+					)}
+
+					{profit < 0 && (
+						<Text style={styles.textProfitNegative}>Lucro: R$ {formatMoney(profit)}</Text>
+					)}
 				</View>
 			</View>
 		);
@@ -145,5 +157,21 @@ const styles = StyleSheet.create({
 
 	textData: {
 		fontSize: 16,
+	},
+
+	profitContainer: {
+		alignItems: 'flex-end',
+	},
+
+	textProfitPositive: {
+		fontSize: 13,
+		fontWeight: 'bold',
+		color: 'green',
+	},
+
+	textProfitNegative: {
+		fontSize: 13,
+		fontWeight: 'bold',
+		color: 'red',
 	},
 });
