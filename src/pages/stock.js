@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
 
 import axios from 'axios';
-import { formatMoney, formatDate } from '../utils/functions';
+import { formatMoney, formatDateDMY } from '../utils/functions';
 
 import BackButton from '../components/BackButton';
 import Loading from '../components/Loading';
@@ -36,7 +36,7 @@ export default function Stock(props) {
 			<View style={styles.itemContainer}>
 				<View style={styles.headerContainer}>
 					<Text style={styles.textStock}>{item.stock}</Text>
-					<Text style={styles.textDate}>{formatDate(item.date)}</Text>
+					<Text style={styles.textDate}>{formatDateDMY(item.date)}</Text>
 				</View>				
 				
 				<View style={{flexDirection: 'row'}}>
