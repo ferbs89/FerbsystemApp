@@ -79,33 +79,11 @@ const RootStackScreen = ({ user }) => (
 	<RootStack.Navigator headerMode="none">
 		{user ? (
 			<>
-				<RootStack.Screen
-					name="App"
-					component={DrawerScreen}
-					options={{
-						animationEnabled: false
-					}}
-					initialParams={{
-						user
-					}}
-				/>
-
-				<RootStack.Screen
-					name="Stock"
-					component={Stock}
-					options={{
-						animationEnabled: false
-					}}
-				/>
+				<RootStack.Screen name="App" component={DrawerScreen} options={{animationEnabled: false}} initialParams={{user}} />
+				<RootStack.Screen name="Stock" component={Stock} options={{animationEnabled: false}} />
 			</>
 		) : (
-			<RootStack.Screen
-				name="Auth"
-				component={AuthStackScreen}
-				options={{
-					animationEnabled: false
-				}}
-			/>
+			<RootStack.Screen name="Auth" component={AuthStackScreen} options={{animationEnabled: false}} />
 		)}
 	</RootStack.Navigator>
 );

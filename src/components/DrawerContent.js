@@ -4,6 +4,7 @@ import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navi
 import { AuthContext } from '../context';
 
 import logoImg from '../assets/logo.png';
+import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function DrawerContent(props) {
@@ -12,7 +13,8 @@ export default function DrawerContent(props) {
 	return (
 		<DrawerContentScrollView {...props}>
 			<View style={styles.logoContainer}>
-				<Image source={logoImg} />
+				<Image style={styles.logoImg} source={lunaris} />
+				<Text style={styles.logoText}>Lunaris</Text>
 			</View>
 
 			<View style={styles.userContainer}>
@@ -34,10 +36,22 @@ export default function DrawerContent(props) {
 
 const styles = StyleSheet.create({
 	logoContainer: {
-		justifyContent: 'center',
+		flexDirection: 'row',
 		alignItems: 'center',
 		paddingTop: 16,
 		paddingHorizontal: 16,
+	},
+
+	logoImg: {
+		width: 56,
+		height: 56,
+	},
+
+	logoText: {
+		marginLeft: 16,
+		fontSize: 32,
+		fontWeight: 'bold',
+		color: '#17496E',
 	},
 
 	userContainer: {

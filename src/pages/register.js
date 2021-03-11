@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Image, TextInput, TouchableWithoutFeedback, Text } from 'react-native';
 import { AuthContext } from '../context';
 
-import logoImg from '../assets/logo.png';
+import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function Register({ navigation }) {
@@ -10,7 +10,8 @@ export default function Register({ navigation }) {
 		<View style={styles.loginContainer}>
 			<View style={styles.loginContent}>
 				<View style={styles.logoContainer}>
-					<Image source={logoImg} />
+					<Image style={styles.logoImg} source={lunaris} />
+					<Text style={styles.logoText}>Lunaris</Text>
 				</View>
 
 				<Text style={styles.loginTitle}>Criar uma conta</Text>
@@ -64,9 +65,22 @@ const styles = StyleSheet.create({
 	},
 	
 	logoContainer: {
+		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 16,
+	},
+
+	logoImg: {
+		width: 56,
+		height: 56,
+	},
+
+	logoText: {
+		marginLeft: 16,
+		fontSize: 32,
+		fontWeight: 'bold',
+		color: '#17496E',
 	},
 
 	loginTitle: {

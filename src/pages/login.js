@@ -1,12 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, View, Image, TextInput, TouchableWithoutFeedback, Text, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../context';
-
 import axios from 'axios';
+
+import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';
 import Toast from 'react-native-toast-message';
-
-import logoImg from '../assets/logo.png';
 
 export default function Login({ navigation }) {
 	const { signIn } = useContext(AuthContext);
@@ -51,7 +50,8 @@ export default function Login({ navigation }) {
 			) : (
 				<View style={styles.loginContent}>
 					<View style={styles.logoContainer}>
-						<Image source={logoImg} />
+						<Image style={styles.logoImg} source={lunaris} />
+						<Text style={styles.logoText}>Lunaris</Text>
 					</View>
 
 					<TextInput
@@ -105,9 +105,22 @@ const styles = StyleSheet.create({
 	},
 	
 	logoContainer: {
+		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 16,
+	},
+
+	logoImg: {
+		width: 56,
+		height: 56,
+	},
+
+	logoText: {
+		marginLeft: 16,
+		fontSize: 32,
+		fontWeight: 'bold',
+		color: '#17496E',
 	},
 
 	loginTitle: {
