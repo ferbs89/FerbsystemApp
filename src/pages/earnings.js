@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
-import axios from 'axios';
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
-import DrawerButton from '../components/DrawerButton';
+import TabNavigator from '../components/TabNavigator';
 
 export default function Earnings({ navigation }) {
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
-				<DrawerButton navigation={navigation} />
 				<Text style={styles.headerTitle}>Proventos</Text>
 			</View>
 
 			<View style={styles.content}>
 
 			</View>
+
+			<TabNavigator navigation={navigation} />
 		</View>
 	);
 };
@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
 	},
 
 	headerTitle: {
+		marginLeft: 16,
 		fontSize: 20,
 		color: '#FFF',
 	},

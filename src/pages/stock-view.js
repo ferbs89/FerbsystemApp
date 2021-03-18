@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableWithoutFeedback, Alert } from 'react-native';
 
 import axios from 'axios';
 import { formatMoney, formatDateDMY } from '../utils/functions';
 
 import BackButton from '../components/BackButton';
 import Loading from '../components/Loading';
+import TabNavigator from '../components/TabNavigator';
+import Icon from 'react-native-vector-icons/Feather';
 
-export default function Stock(props) {
+export default function StockView(props) {
 	const stock = props.route.params.stock;
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -16,6 +18,14 @@ export default function Stock(props) {
 	useEffect(() => {
 		fetchData();
 	}, []);
+
+	useEffect(() => {
+		const unsubscribe = props.navigation.addListener('focus', () => {
+			fetchData();
+		});
+
+		return unsubscribe;
+	}, [props.navigation]);
 
 	async function fetchData() {
 		await axios.get(`https://ferbsystem.vercel.app/api/orders?stock=${stock}`)
@@ -33,39 +43,41 @@ export default function Stock(props) {
 		const profit = (item.qty < 0 ) ? (Math.abs(item.qty) * item.price) - (Math.abs(item.qty) * item.avg_price) : (0);
 
 		return (
-			<View style={styles.itemContainer}>
-				<View style={styles.headerContainer}>
-					<Text style={styles.textStock}>{item.stock}</Text>
-					<Text style={styles.textDate}>{formatDateDMY(item.date)}</Text>
-				</View>				
-				
-				<View style={{flexDirection: 'row'}}>
-					<View style={{flex: 1, alignItems: 'flex-start'}}>
-						<Text style={styles.textTitle}>Preço</Text>
-						<Text style={styles.textData}>R$ {formatMoney(item.price)}</Text>
+			<TouchableWithoutFeedback onPress={() => props.navigation.push('OrderEdit', {order: item})}>
+				<View style={styles.itemContainer}>
+					<View style={styles.itemHeaderContainer}>
+						<Text style={styles.textStock}>{item.stock}</Text>
+						<Text style={styles.textDate}>{formatDateDMY(item.date)}</Text>
+					</View>				
+					
+					<View style={{flexDirection: 'row'}}>
+						<View style={{flex: 1, alignItems: 'flex-start'}}>
+							<Text style={styles.textTitle}>Preço</Text>
+							<Text style={styles.textData}>R$ {formatMoney(item.price)}</Text>
+						</View>
+
+						<View style={{flex: 1, alignItems: 'center'}}>
+							<Text style={styles.textTitle}>Qtde.</Text>
+							<Text style={styles.textData}>{item.qty}</Text>
+						</View>					
+
+						<View style={{flex: 1, alignItems: 'flex-end'}}>
+							<Text style={styles.textTitle}>Total</Text>
+							<Text style={styles.textData}>R$ {formatMoney(item.qty * item.price)}</Text>
+						</View>
 					</View>
 
-					<View style={{flex: 1, alignItems: 'center'}}>
-						<Text style={styles.textTitle}>Qtde.</Text>
-						<Text style={styles.textData}>{item.qty}</Text>
-					</View>					
+					<View style={styles.profitContainer}>
+						{profit > 0 && (
+							<Text style={styles.textProfitPositive}>Lucro: R$ {formatMoney(profit)}</Text>
+						)}
 
-					<View style={{flex: 1, alignItems: 'flex-end'}}>
-						<Text style={styles.textTitle}>Total</Text>
-						<Text style={styles.textData}>R$ {formatMoney(item.qty * item.price)}</Text>
+						{profit < 0 && (
+							<Text style={styles.textProfitNegative}>Lucro: R$ {formatMoney(profit)}</Text>
+						)}
 					</View>
 				</View>
-
-				<View style={styles.profitContainer}>
-					{profit > 0 && (
-						<Text style={styles.textProfitPositive}>Lucro: R$ {formatMoney(profit)}</Text>
-					)}
-
-					{profit < 0 && (
-						<Text style={styles.textProfitNegative}>Lucro: R$ {formatMoney(profit)}</Text>
-					)}
-				</View>
-			</View>
+			</TouchableWithoutFeedback>
 		);
 	}
 
@@ -73,7 +85,18 @@ export default function Stock(props) {
 		<View style={styles.container}>
 			<View style={styles.header}>
 				<BackButton navigation={props.navigation} />
-				<Text style={styles.headerTitle}>{stock}</Text>
+
+				<View style={styles.headerTitle}>
+					<Text style={styles.headerTitleText}>{stock}</Text>
+				</View>
+
+				<View style={styles.headerRight}>
+					<TouchableWithoutFeedback onPress={() => {props.navigation.push('OrderCreate', {stock})}}>
+						<View style={styles.headerRightIcon}>
+							<Icon name="plus-circle" size={24} color="#FFF" />
+						</View>
+					</TouchableWithoutFeedback>
+				</View>
 			</View>
 
 			{loading ? (
@@ -90,6 +113,8 @@ export default function Stock(props) {
 					/>
 				</View>
 			)}
+
+			<TabNavigator navigation={props.navigation} />
 		</View>
 	);
 };
@@ -103,13 +128,26 @@ const styles = StyleSheet.create({
 	header: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'space-between',
 		backgroundColor: '#17496E',
 		height: 56,
 	},
 
 	headerTitle: {
+		flex: 1,
+	},
+
+	headerTitleText: {
 		fontSize: 20,
 		color: '#FFF',
+	},
+
+	headerRight: {
+		flexDirection: 'row',
+	},
+
+	headerRightIcon: {
+		padding: 16,
 	},
 
 	content: {
@@ -129,7 +167,7 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 	},
 
-	headerContainer: {
+	itemHeaderContainer: {
 		flexDirection: 'row', 
 		justifyContent: 'space-between', 
 		alignItems: 'center',

@@ -101,7 +101,9 @@ const styles = StyleSheet.create({
 	loginContent: {
 		backgroundColor: '#eef6fb',
 		borderRadius: 8,
-		padding: 16,
+		paddingHorizontal: 16,
+		paddingTop: 16,
+		paddingBottom: 8,
 	},
 	
 	logoContainer: {

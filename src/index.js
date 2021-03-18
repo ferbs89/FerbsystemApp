@@ -2,88 +2,43 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { AuthContext } from './context';
 
 import axios from 'axios';
-import Icon from 'react-native-vector-icons/Feather';
 import Toast from 'react-native-toast-message';
 
 import Loading from './pages/loading';
-import DrawerContent from './components/DrawerContent';
 import Login from './pages/login';
 import Register from './pages/register';
+
 import Stocks from './pages/stocks';
-import Stock from './pages/stock';
 import Orders from './pages/orders';
 import Earnings from './pages/earnings';
+import Profile from './pages/profile';
 
-const AuthStack = createStackNavigator();
-const AuthStackScreen = () => (
-	<AuthStack.Navigator screenOptions={{headerShown: false}}>
-		<AuthStack.Screen name="Login" component={Login} options={{animationEnabled: false}} />
-		<AuthStack.Screen name="Register" component={Register} options={{animationEnabled: false}} />
-	</AuthStack.Navigator>
-);
-
-const Drawer = createDrawerNavigator();
-const DrawerScreen = (navigation) => {
-	const user = navigation.route.params.user;
-
-	return (
-		<Drawer.Navigator 
-			initialRouteName="Stocks" 
-			drawerContent={props => <DrawerContent {...props} user={user} />}
-			drawerContentOptions={{
-				activeTintColor: "#17496E",
-				inactiveTintColor: "#17496E",
-				activeBackgroundColor: "#f5f5f5",
-				labelStyle: { 
-					fontWeight: 'bold', 
-					fontSize: 16,
-				},
-			}}
-		>
-			<Drawer.Screen 
-				name="Stocks" 
-				component={Stocks} 
-				options={{
-					drawerLabel: 'Ativos', 
-					drawerIcon: () => (<Icon name="trending-up" size={24} color="#17496E" />),
-				}}
-			/>
-
-			<Drawer.Screen 
-				name="Orders" 
-				component={Orders} 
-				options={{
-					drawerLabel: 'Operações',
-					drawerIcon: () => (<Icon name="layers" size={24} color="#17496E" />),
-				}}
-			/>
-
-			<Drawer.Screen
-				name="Earnings"
-				component={Earnings}
-				options={{
-					drawerLabel: 'Proventos',
-					drawerIcon: () => (<Icon name="zap" size={24} color="#17496E" />),
-				}}
-			/>
-		</Drawer.Navigator>
-	);
-}
+import StockView from './pages/stock-view';
+import OrderCreate from './pages/order-create';
+import OrderEdit from './pages/order-edit';
 
 const RootStack = createStackNavigator();
 const RootStackScreen = ({ user }) => (
-	<RootStack.Navigator headerMode="none">
+	<RootStack.Navigator headerMode="none" screenOptions={{ animationEnabled: false }}>
 		{user ? (
 			<>
-				<RootStack.Screen name="App" component={DrawerScreen} options={{animationEnabled: false}} initialParams={{user}} />
-				<RootStack.Screen name="Stock" component={Stock} options={{animationEnabled: false}} />
+				<RootStack.Screen name="Stocks" 		component={Stocks} 		/>
+				<RootStack.Screen name="Orders" 		component={Orders} 		/>
+				<RootStack.Screen name="Earnings" 		component={Earnings} 	/>
+				<RootStack.Screen name="Profile" 		component={Profile} 	initialParams={{ user }} />
+
+				<RootStack.Screen name="StockView" 		component={StockView} 	/>
+				<RootStack.Screen name="OrderCreate" 	component={OrderCreate}	/>
+				<RootStack.Screen name="OrderEdit" 		component={OrderEdit} 	/>
 			</>
 		) : (
-			<RootStack.Screen name="Auth" component={AuthStackScreen} options={{animationEnabled: false}} />
+			<>
+				<RootStack.Screen name="Login" 			component={Login} 		/>
+				<RootStack.Screen name="Register" 		component={Register} 	/>
+			</>
 		)}
 	</RootStack.Navigator>
 );

@@ -4,8 +4,8 @@ import { StyleSheet, View, Text, FlatList, TouchableWithoutFeedback } from 'reac
 import axios from 'axios';
 import { formatMoney } from '../utils/functions';
 
-import DrawerButton from '../components/DrawerButton';
 import Loading from '../components/Loading';
+import TabNavigator from '../components/TabNavigator';
 
 export default function Stocks({ navigation }) {
 	const [stocks, setStocks] = useState([]);
@@ -15,6 +15,14 @@ export default function Stocks({ navigation }) {
 	useEffect(() => {
 		fetchData();
 	}, []);
+
+	useEffect(() => {
+		const unsubscribe = navigation.addListener('focus', () => {
+			fetchData();
+		});
+
+		return unsubscribe;
+	}, [navigation]);
 
 	async function fetchData() {
 		await axios.get('https://ferbsystem.vercel.app/api/stocks')
@@ -30,11 +38,7 @@ export default function Stocks({ navigation }) {
 
 	function renderItem({ item }) {
 		return (
-			<TouchableWithoutFeedback onPress={() => {
-				navigation.push('Stock', {
-					stock: item._id,
-				});
-			}}>
+			<TouchableWithoutFeedback onPress={() => navigation.push('StockView', {stock: item._id})}>
 				<View style={styles.itemContainer}>
 					<View style={styles.headerContainer}>
 						<Text style={styles.textStock}>{item._id}</Text>
@@ -64,7 +68,6 @@ export default function Stocks({ navigation }) {
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
-				<DrawerButton navigation={navigation} />
 				<Text style={styles.headerTitle}>Ativos</Text>
 			</View>
 			
@@ -82,6 +85,8 @@ export default function Stocks({ navigation }) {
 					/>
 				</View>
 			)}
+
+			<TabNavigator navigation={navigation} />
 		</View>
 	);
 };
@@ -100,6 +105,7 @@ const styles = StyleSheet.create({
 	},
 
 	headerTitle: {
+		marginLeft: 16,
 		fontSize: 20,
 		color: '#FFF',
 	},
