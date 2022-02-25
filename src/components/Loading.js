@@ -14,8 +14,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#eef6fb',
-		borderTopLeftRadius: 8,
-		borderTopRightRadius: 8,
+		backgroundColor: '#f9fafa',
 	},
 });

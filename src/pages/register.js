@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 	},
 	
 	loginContent: {
-		backgroundColor: '#eef6fb',
+		backgroundColor: '#f9fafa',
 		borderRadius: 8,
 		paddingHorizontal: 16,
 		paddingTop: 16,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 		backgroundColor: '#FFF',
 		borderWidth: 1,
-		borderColor: '#dcdce6',
+		borderColor: '#d3dada',
 		height: 48,
 		borderRadius: 8,
 		marginBottom: 16,

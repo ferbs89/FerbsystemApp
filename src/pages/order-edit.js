@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TextInput, ScrollView } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 
 import BackButton from '../components/BackButton';
 import TabNavigator from '../components/TabNavigator';
@@ -20,20 +21,14 @@ export default function OrderEdit(props) {
 			<View style={styles.header}>
 				<BackButton navigation={props.navigation} />
 
-				<View style={styles.headerTitle}>
-					<Text style={styles.headerTitleText}>Editar operação</Text>
-				</View>
+				<Text style={styles.headerTitle}>Editar operação</Text>
 
-				<View style={styles.headerRight}>
-					<TouchableWithoutFeedback>
-						<View style={styles.headerRightIcon}>
-							<Icon name="trash-2" size={24} color="#FFF" />
-						</View>
-					</TouchableWithoutFeedback>
-				</View>
+				<RectButton style={styles.headerButton} onPress={() => props.navigation.goBack()}>
+					<Icon name="trash-2" size={24} color="#ffffff" />
+				</RectButton>
 			</View>
 
-			<ScrollView style={{flex: 1, backgroundColor: '#eef6fb', borderTopLeftRadius: 8, borderTopRightRadius: 8}}>
+			<ScrollView>
 				<View style={styles.content}>
 					<Text style={styles.labelInput}>Ativo</Text>
 
@@ -69,12 +64,6 @@ export default function OrderEdit(props) {
 						onChangeText={setPrice}
 						keyboardType="numeric"
 					/>
-
-					<TouchableWithoutFeedback onPress={() => props.navigation.goBack()}>
-						<View style={styles.button}>
-							<Text style={styles.buttonText}>Salvar</Text>
-						</View>
-					</TouchableWithoutFeedback>
 				</View>
 			</ScrollView>
 
@@ -86,40 +75,41 @@ export default function OrderEdit(props) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#17496E',
+		backgroundColor: '#f9fafa',
+	},
+
+	content: {
+		flex: 1,
+		padding: 16,
 	},
 
 	header: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		paddingVertical: 8,
+		paddingHorizontal: 16,
 		backgroundColor: '#17496E',
-		height: 56,
 	},
 
 	headerTitle: {
-		flex: 1,
+		fontSize: 18,
+		fontWeight: 'bold',
+		color: '#ffffff',
 	},
 
-	headerTitleText: {
-		fontSize: 20,
-		color: '#FFF',
-	},
-
-	headerRight: {
-		flexDirection: 'row',
-	},
-
-	headerRightIcon: {
-		padding: 16,
-	},
-
-	content: {
-		padding: 16,
+	headerButton: {
+		width: 40,
+		height: 40,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: '#143E5E',
+		borderRadius: 20,
 	},
 
 	labelInput: {
-		fontSize: 16,
+		fontSize: 15,
+		fontWeight: 'bold',
 		color: '#737380',
 		marginBottom: 4,
 	},
@@ -151,6 +141,6 @@ const styles = StyleSheet.create({
 	buttonText: {
 		color: '#FFF',
 		fontWeight: 'bold',
-		fontSize: 16,
+		fontSize: 15,
 	},
 });

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
 
 import axios from 'axios';
-import { formatMoney } from '../utils/functions';
 
 import Loading from '../components/Loading';
+import Stock from '../components/Stock';
 import TabNavigator from '../components/TabNavigator';
 
 export default function Stocks({ navigation }) {
@@ -27,7 +27,7 @@ export default function Stocks({ navigation }) {
 	async function fetchData() {
 		await axios.get('https://ferbsystem.vercel.app/api/stocks')
 		.then(response => {
-			setStocks(response.data);
+			setStocks(response.data.stocks);
 			setLoading(false);
 
 		}).catch(error => {
@@ -36,54 +36,40 @@ export default function Stocks({ navigation }) {
 		});
 	}
 
+	function renderHeader() {
+		return (
+			<View style={styles.header}>
+				<Text style={styles.headerTitle}>Carteira</Text>
+			</View>
+		);
+	}
+
 	function renderItem({ item }) {
 		return (
-			<TouchableWithoutFeedback onPress={() => navigation.push('StockView', {stock: item._id})}>
-				<View style={styles.itemContainer}>
-					<View style={styles.headerContainer}>
-						<Text style={styles.textStock}>{item._id}</Text>
-					</View>				
+			<Stock item={item} navigation={navigation} />
+		);
+	}
 
-					<View style={{flexDirection: 'row'}}>
-						<View style={{flex: 1, alignItems: 'flex-start'}}>
-							<Text style={styles.textTitle}>Preço</Text>
-							<Text style={styles.textData}>R$ {formatMoney(item.total / item.qty)}</Text>
-						</View>
-
-						<View style={{flex: 1, alignItems: 'center'}}>
-							<Text style={styles.textTitle}>Qtde.</Text>
-							<Text style={styles.textData}>{item.qty}</Text>
-						</View>					
-
-						<View style={{flex: 1, alignItems: 'flex-end'}}>
-							<Text style={styles.textTitle}>Total</Text>
-							<Text style={styles.textData}>R$ {formatMoney(item.total)}</Text>
-						</View>
-					</View>
-				</View>
-			</TouchableWithoutFeedback>
+	function renderFooter() {
+		return (
+			<View style={{ marginBottom: 16 }} />
 		);
 	}
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.header}>
-				<Text style={styles.headerTitle}>Ativos</Text>
-			</View>
-			
 			{loading ? (
 				<Loading />
 			) : (
-				<View style={styles.content}>
-					<FlatList
-						data={stocks}
-						keyExtractor={item => item._id.toString()}
-						renderItem={renderItem}
-						ListFooterComponent={() => <View style={{marginBottom: 16}}></View>}
-						onRefresh={fetchData}
-						refreshing={refreshing}
-					/>
-				</View>
+				<FlatList
+					data={stocks}
+					keyExtractor={item => item._id}
+					renderItem={renderItem}
+					ListHeaderComponent={renderHeader}
+					ListFooterComponent={renderFooter}
+					onRefresh={fetchData}
+					refreshing={refreshing}
+				/>
 			)}
 
 			<TabNavigator navigation={navigation} />
@@ -94,67 +80,19 @@ export default function Stocks({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#17496E',
+		backgroundColor: '#f9fafa',
 	},
 
 	header: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		backgroundColor: '#17496E',
-		height: 56,
+		paddingTop: 16,
+		paddingHorizontal: 16,
 	},
 
 	headerTitle: {
-		marginLeft: 16,
-		fontSize: 20,
-		color: '#FFF',
-	},
-
-	content: {
-		flex: 1,
-		backgroundColor: '#eef6fb',
-		borderTopLeftRadius: 8,
-		borderTopRightRadius: 8,
-	},
-
-	itemContainer: {
-		backgroundColor: '#FFF',
-		marginHorizontal: 16,
-		marginTop: 16,
-		padding: 16,
-		borderWidth: 1,
-		borderColor: '#dcdce6',
-		borderRadius: 8,
-	},
-
-	headerContainer: {
-		flexDirection: 'row', 
-		justifyContent: 'space-between', 
-		alignItems: 'center',
-		borderBottomWidth: 1, 
-		borderBottomColor: '#dcdce6', 
-		paddingBottom: 8, 
-		marginBottom: 8,
-	},
-
-	textStock: {
-		fontSize: 18,
+		fontSize: 24,
 		fontWeight: 'bold',
-		color: '#17496E',
-	},
-
-	textDate: {
-		fontWeight: 'bold',
-		color: '#17496E',
-	},
-
-	textTitle: {
-		fontSize: 13,
-		fontWeight: 'bold',
-		color: '#737380',
-	},
-
-	textData: {
-		fontSize: 16,
+		color: '#05111a',
 	},
 });

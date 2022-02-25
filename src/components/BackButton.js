@@ -1,21 +1,23 @@
 import React from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
-
+import { StyleSheet } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function BackButton({ navigation }) {
 	return (
-		<TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-			<View style={styles.drawerButton}>
-				<Icon name="arrow-left" size={24} color="#FFF" />
-			</View>
-		</TouchableWithoutFeedback>
+		<RectButton style={styles.drawerButton} onPress={() => navigation.goBack()}>
+			<Icon name="arrow-left" size={24} color="#ffffff" />
+		</RectButton>
 	);
 }
 
 const styles = StyleSheet.create({
 	drawerButton: {
-		marginTop: 2,
-		padding: 16,
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: '#143E5E',
 	},
 });

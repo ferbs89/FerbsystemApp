@@ -13,10 +13,6 @@ export default function Profile(props) {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.header}>
-				<Text style={styles.headerTitle}>Perfil</Text>
-			</View>
-
 			<View style={styles.content}>
 				<View style={styles.logoContainer}>
 					<Image style={styles.logoImg} source={lunaris} />
@@ -51,25 +47,11 @@ export default function Profile(props) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#17496E',
-	},
-
-	header: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		backgroundColor: '#17496E',
-		height: 56,
-	},
-
-	headerTitle: {
-		marginLeft: 16,
-		fontSize: 20,
-		color: '#FFF',
+		backgroundColor: '#f9fafa',
 	},
 
 	content: {
 		flex: 1,
-		backgroundColor: '#eef6fb',
 		borderTopLeftRadius: 8,
 		borderTopRightRadius: 8,
 	},
@@ -100,7 +82,7 @@ const styles = StyleSheet.create({
 		paddingBottom: 16,
 		backgroundColor: '#FFF',
 		borderBottomWidth: 1,
-		borderColor: '#dcdce6',
+		borderColor: '#d3dada',
 	},
 
 	userName: {
@@ -122,13 +104,13 @@ const styles = StyleSheet.create({
 		padding: 16,
 		backgroundColor: '#FFF',
 		borderWidth: 1,
-		borderColor: '#dcdce6',
+		borderColor: '#d3dada',
 		borderRadius: 8,
 	},
 
 	listLabel: {
 		marginLeft: 16,
-		fontSize: 16,
+		fontSize: 15,
 		fontWeight: 'bold',
 		color: '#17496E',
 	},

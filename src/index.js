@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { AuthContext } from './context';
 
 import axios from 'axios';
@@ -13,7 +13,7 @@ import Register from './pages/register';
 
 import Stocks from './pages/stocks';
 import Orders from './pages/orders';
-import Earnings from './pages/earnings';
+import Dividends from './pages/dividends';
 import Profile from './pages/profile';
 
 import StockView from './pages/stock-view';
@@ -27,7 +27,7 @@ const RootStackScreen = ({ user }) => (
 			<>
 				<RootStack.Screen name="Stocks" 		component={Stocks} 		/>
 				<RootStack.Screen name="Orders" 		component={Orders} 		/>
-				<RootStack.Screen name="Earnings" 		component={Earnings} 	/>
+				<RootStack.Screen name="Dividends" 		component={Dividends} 	/>
 				<RootStack.Screen name="Profile" 		component={Profile} 	initialParams={{ user }} />
 
 				<RootStack.Screen name="StockView" 		component={StockView} 	/>
@@ -85,7 +85,7 @@ export default function App() {
 
 	return (
 		<>
-			<StatusBar backgroundColor="#17496E" barStyle="light-content" />
+			<StatusBar backgroundColor="#143E5E" barStyle="light-content" />
 
 			<AuthContext.Provider value={authContext}>
 				<NavigationContainer>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableWithoutFeedback, Alert } from 'react-native';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 
 import axios from 'axios';
 import { formatMoney, formatDateDMY } from '../utils/functions';
@@ -10,7 +11,8 @@ import TabNavigator from '../components/TabNavigator';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function StockView(props) {
-	const stock = props.route.params.stock;
+	const params = props.route.params;
+	const [stock, setStock] = useState(null);
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [refreshing, setRefreshing] = useState(false);
@@ -28,36 +30,112 @@ export default function StockView(props) {
 	}, [props.navigation]);
 
 	async function fetchData() {
-		await axios.get(`https://ferbsystem.vercel.app/api/orders?stock=${stock}`)
+		await axios.get(`https://ferbsystem.vercel.app/api/orders?stock=${params.stock}`)
 		.then(response => {
+			setStock(response.data.stock);
 			setOrders(response.data.orders);
 			setLoading(false);
 
 		}).catch(error => {
+			setStock(null);
 			setOrders([]);
 			setLoading(false);
 		});
+	}
+
+	function renderHeader() {
+		const profit = (stock.qty * stock.marketPrice) - stock.total;
+		const profit_percent = (stock.marketPrice - stock.avg_price) / stock.avg_price * 100;
+
+		return (
+			<>
+				<View style={styles.header}>
+					<BackButton navigation={props.navigation} />
+
+					<Text style={styles.headerTitle}>{params.stock} ({stock.marketChangePercent.toFixed(2).toString().replace('.', ',') + '%'})</Text>
+
+					<RectButton style={styles.headerButton} onPress={() => { props.navigation.push('OrderCreate', {stock: params.stock}) }}>
+						<Icon name="plus" size={24} color="#ffffff" />
+					</RectButton>
+				</View>
+
+				<View style={[styles.itemContainer, styles.itemContent]}>
+					<View style={{ paddingHorizontal: 8, }}>
+						<View style={styles.detailContainer}>
+							<Text style={styles.textTitle}>Intradia</Text>
+							
+							<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', }}>
+								<View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 4 }}>
+									<Icon name="arrow-down" size={16} color="red" />
+									<Text style={styles.textData}>R$ {formatMoney(stock.marketDayLow)}</Text>
+								</View>
+
+								<View style={{ flexDirection: 'row', alignItems: 'center', }}>
+									<Icon name="arrow-up" size={16} color="green" />
+									<Text style={styles.textData}>R$ {formatMoney(stock.marketDayHigh)}</Text>
+								</View>
+							</View>
+						</View>
+
+						<View style={styles.detailContainer}>
+							<Text style={styles.textTitle}>Preço</Text>
+							<Text style={styles.textData}>R$ {formatMoney(stock.marketPrice)}</Text>
+						</View>
+
+						<View style={styles.detailContainer}>
+							<Text style={styles.textTitle}>Custo</Text>
+							<Text style={styles.textData}>R$ {formatMoney(stock.avg_price)}</Text>
+						</View>
+
+						<View style={styles.detailContainer}>
+							<Text style={styles.textTitle}>Quantidade</Text>
+							<Text style={styles.textData}>{stock.qty}</Text>
+						</View>
+
+						<View style={styles.detailContainer}>
+							<Text style={styles.textTitle}>Total</Text>
+							<Text style={styles.textData}>R$ {formatMoney(stock.qty * stock.marketPrice)}</Text>
+						</View>
+
+						<View style={styles.detailContainer}>
+							<Text style={styles.textTitle}>Lucro</Text>
+							<Text style={profit > 0 ? styles.textPositive : styles.textNegative}>R$ {formatMoney(profit)}</Text>
+						</View>
+
+						<View style={styles.detailContainer}>
+							<Text style={styles.textTitle}>Rentabilidade</Text>
+							<Text style={profit_percent > 0 ? styles.textPositive : styles.textNegative}>{profit_percent.toFixed(2).replace('.', ',')}%</Text>
+						</View>
+
+						<View style={styles.detailContainerLast}>
+							<Text style={styles.textTitle}>Dividendos</Text>
+							<Text style={styles.textData}>R$ {formatMoney(stock.dividend)}</Text>
+						</View>
+					</View>
+				</View>
+			</>
+		);
 	}
 
 	function renderItem({ item }) {
 		const profit = (item.qty < 0 ) ? (Math.abs(item.qty) * item.price) - (Math.abs(item.qty) * item.avg_price) : (0);
 
 		return (
-			<TouchableWithoutFeedback onPress={() => props.navigation.push('OrderEdit', {order: item})}>
-				<View style={styles.itemContainer}>
-					<View style={styles.itemHeaderContainer}>
-						<Text style={styles.textStock}>{item.stock}</Text>
-						<Text style={styles.textDate}>{formatDateDMY(item.date)}</Text>
+			<RectButton style={styles.itemContainer} onPress={() => props.navigation.push('OrderEdit', {order: item})}>
+				<View style={styles.itemContent}>
+					<View style={styles.headerContainer}>
+						<Text style={styles.textHeader}>{item.stock}</Text>
+						<Text style={styles.textHeader}>{formatDateDMY(item.date)}</Text>
 					</View>				
 					
-					<View style={{flexDirection: 'row'}}>
+					<View style={{ flexDirection: 'row', padding: 8, }}>
 						<View style={{flex: 1, alignItems: 'flex-start'}}>
 							<Text style={styles.textTitle}>Preço</Text>
 							<Text style={styles.textData}>R$ {formatMoney(item.price)}</Text>
 						</View>
 
 						<View style={{flex: 1, alignItems: 'center'}}>
-							<Text style={styles.textTitle}>Qtde.</Text>
+							<Text style={styles.textTitle}>Qtde</Text>
 							<Text style={styles.textData}>{item.qty}</Text>
 						</View>					
 
@@ -67,51 +145,36 @@ export default function StockView(props) {
 						</View>
 					</View>
 
-					<View style={styles.profitContainer}>
-						{profit > 0 && (
-							<Text style={styles.textProfitPositive}>Lucro: R$ {formatMoney(profit)}</Text>
-						)}
+					{profit != 0 && (
+						<View style={styles.profitContainer}>
+							{profit > 0 && (
+								<Text style={styles.textProfitPositive}>Lucro: R$ {formatMoney(profit)}</Text>
+							)}
 
-						{profit < 0 && (
-							<Text style={styles.textProfitNegative}>Lucro: R$ {formatMoney(profit)}</Text>
-						)}
-					</View>
+							{profit < 0 && (
+								<Text style={styles.textProfitNegative}>Lucro: R$ {formatMoney(profit)}</Text>
+							)}
+						</View>
+					)}
 				</View>
-			</TouchableWithoutFeedback>
+			</RectButton>
 		);
 	}
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.header}>
-				<BackButton navigation={props.navigation} />
-
-				<View style={styles.headerTitle}>
-					<Text style={styles.headerTitleText}>{stock}</Text>
-				</View>
-
-				<View style={styles.headerRight}>
-					<TouchableWithoutFeedback onPress={() => {props.navigation.push('OrderCreate', {stock})}}>
-						<View style={styles.headerRightIcon}>
-							<Icon name="plus-circle" size={24} color="#FFF" />
-						</View>
-					</TouchableWithoutFeedback>
-				</View>
-			</View>
-
 			{loading ? (
 				<Loading />
 			) : (
-				<View style={styles.content}>
-					<FlatList
-						data={orders}
-						keyExtractor={item => item._id.toString()}
-						renderItem={renderItem}
-						ListFooterComponent={() => <View style={{marginBottom: 16}}></View>}
-						onRefresh={fetchData}
-						refreshing={refreshing}
-					/>
-				</View>
+				<FlatList
+					data={orders}
+					keyExtractor={item => item._id.toString()}
+					ListHeaderComponent={renderHeader}
+					renderItem={renderItem}
+					ListFooterComponent={() => <View style={{marginBottom: 16}}></View>}
+					onRefresh={fetchData}
+					refreshing={refreshing}
+				/>
 			)}
 
 			<TabNavigator navigation={props.navigation} />
@@ -122,84 +185,105 @@ export default function StockView(props) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#17496E',
+		backgroundColor: '#f9fafa',
 	},
 
 	header: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		paddingVertical: 8,
+		paddingHorizontal: 16,
 		backgroundColor: '#17496E',
-		height: 56,
 	},
 
 	headerTitle: {
-		flex: 1,
+		fontSize: 18,
+		fontWeight: 'bold',
+		color: '#ffffff',
 	},
 
-	headerTitleText: {
-		fontSize: 20,
-		color: '#FFF',
-	},
-
-	headerRight: {
-		flexDirection: 'row',
-	},
-
-	headerRightIcon: {
-		padding: 16,
-	},
-
-	content: {
-		flex: 1,
-		backgroundColor: '#eef6fb',
-		borderTopLeftRadius: 8,
-		borderTopRightRadius: 8,
+	headerButton: {
+		width: 40,
+		height: 40,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: '#143E5E',
+		borderRadius: 20,
 	},
 
 	itemContainer: {
-		backgroundColor: '#FFF',
-		marginHorizontal: 16,
 		marginTop: 16,
-		padding: 16,
-		borderWidth: 1,
-		borderColor: '#dcdce6',
-		borderRadius: 8,
+		marginHorizontal: 16,
+		backgroundColor: '#FFF',
 	},
 
-	itemHeaderContainer: {
+	itemContent: {		
+		borderWidth: 1,
+		borderColor: '#d3dada',
+		borderRadius: 4,
+	},
+
+	headerContainer: {
 		flexDirection: 'row', 
 		justifyContent: 'space-between', 
-		alignItems: 'center',
+		padding: 8, 
+		backgroundColor: '#e6eaea',
+		borderTopLeftRadius: 4, 
+		borderTopRightRadius: 4, 
 		borderBottomWidth: 1, 
-		borderBottomColor: '#dcdce6', 
-		paddingBottom: 8, 
-		marginBottom: 8,
+		borderBottomColor: '#d3dada',
 	},
 
-	textStock: {
-		fontSize: 18,
+	detailContainer: {
+		flex: 1, 
+		flexDirection: 'row', 
+		alignItems: 'center', 
+		justifyContent: 'space-between',
+		paddingVertical: 8, 
+		borderBottomWidth: 1, 
+		borderBottomColor: '#d3dada',
+	},
+
+	detailContainerLast: {
+		flex: 1, 
+		flexDirection: 'row', 
+		alignItems: 'center', 
+		justifyContent: 'space-between',
+		paddingVertical: 8,
+	},
+
+	textHeader: {
+		fontSize: 15,
 		fontWeight: 'bold',
 		color: '#17496E',
 	},
 
-	textDate: {
+	textPositive: {
+		fontSize: 15,
 		fontWeight: 'bold',
-		color: '#17496E',
+		color: 'green',
+	},
+
+	textNegative: {
+		fontSize: 15,
+		fontWeight: 'bold',
+		color: 'red',
 	},
 
 	textTitle: {
-		fontSize: 13,
+		fontSize: 15,
 		fontWeight: 'bold',
 		color: '#737380',
 	},
 
 	textData: {
-		fontSize: 16,
+		fontSize: 15,
 	},
 
 	profitContainer: {
-		alignItems: 'flex-end',
+		alignItems: 'center',
+		marginBottom: 8,
 	},
 
 	textProfitPositive: {
