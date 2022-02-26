@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, View, Image, TextInput, TouchableWithoutFeedback, Text, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../context';
-import axios from 'axios';
+
+import { api } from '../services/api';
 
 import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';
@@ -26,7 +27,7 @@ export default function Login({ navigation }) {
 
 		setLoading(true);
 
-		await axios.post('https://ferbsystem.vercel.app/api/login', { 
+		await api.post('/login', { 
 			email, 
 			password,
 		

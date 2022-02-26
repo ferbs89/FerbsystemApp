@@ -1,40 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { useQuery } from 'react-query';
 
-import axios from 'axios';
+import { api } from '../services/api';
 
 import Loading from '../components/Loading';
 import Stock from '../components/Stock';
 import TabNavigator from '../components/TabNavigator';
 
 export default function Stocks({ navigation }) {
-	const [stocks, setStocks] = useState([]);
-	const [loading, setLoading] = useState(true);
 	const [refreshing, setRefreshing] = useState(false);
 
-	useEffect(() => {
-		fetchData();
-	}, []);
-
-	useEffect(() => {
-		const unsubscribe = navigation.addListener('focus', () => {
-			fetchData();
-		});
-
-		return unsubscribe;
-	}, [navigation]);
-
-	async function fetchData() {
-		await axios.get('https://ferbsystem.vercel.app/api/stocks')
-		.then(response => {
-			setStocks(response.data.stocks);
-			setLoading(false);
-
-		}).catch(error => {
-			setStocks([]);
-			setLoading(false);
-		});
-	}
+	const { data: stocks, isLoading, refetch } = useQuery('stocks', async () => {
+		const response = await api.get('/stocks');
+		return response.data.stocks;
+	}, {
+		staleTime: 1000 * 60 * 10, // 10 minutes
+	});
 
 	function renderHeader() {
 		return (
@@ -58,7 +40,7 @@ export default function Stocks({ navigation }) {
 
 	return (
 		<View style={styles.container}>
-			{loading ? (
+			{isLoading ? (
 				<Loading />
 			) : (
 				<FlatList
@@ -67,7 +49,7 @@ export default function Stocks({ navigation }) {
 					renderItem={renderItem}
 					ListHeaderComponent={renderHeader}
 					ListFooterComponent={renderFooter}
-					onRefresh={fetchData}
+					onRefresh={refetch}
 					refreshing={refreshing}
 				/>
 			)}

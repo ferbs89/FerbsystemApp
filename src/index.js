@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import { AuthContext } from './context';
-
-import axios from 'axios';
+import { createStackNavigator } from '@react-navigation/stack';
+import { QueryClientProvider } from 'react-query';
 import Toast from 'react-native-toast-message';
+
+import { AuthContext } from './context';
+import { queryClient } from './services/queryClient';
+import { api } from './services/api';
 
 import Loading from './pages/loading';
 import Login from './pages/login';
@@ -19,6 +21,8 @@ import Profile from './pages/profile';
 import StockView from './pages/stock-view';
 import OrderCreate from './pages/order-create';
 import OrderEdit from './pages/order-edit';
+
+LogBox.ignoreLogs(['Setting a timer']);
 
 const RootStack = createStackNavigator();
 const RootStackScreen = ({ user }) => (
@@ -58,8 +62,10 @@ export default function App() {
 			},
 
 			signOut: async () => {
-				await axios.get('https://ferbsystem.vercel.app/api/logout').then(response => {
+				await api.get('/logout').then(response => {
 					setUser(null);
+					queryClient.clear();
+
 				}).catch(error => {
 					console.log(error.response.status);
 				});
@@ -68,7 +74,7 @@ export default function App() {
 	}, []);
 
 	useEffect(() => {
-		axios.get('https://ferbsystem.vercel.app/api/user').then(response => {
+		api.get('/user').then(response => {
 			if (response.data.isLoggedIn)
 				setUser(response.data);
 
@@ -88,9 +94,11 @@ export default function App() {
 			<StatusBar backgroundColor="#143E5E" barStyle="light-content" />
 
 			<AuthContext.Provider value={authContext}>
-				<NavigationContainer>
-					<RootStackScreen user={user} />
-				</NavigationContainer>
+				<QueryClientProvider client={queryClient}>
+					<NavigationContainer>
+						<RootStackScreen user={user} />
+					</NavigationContainer>
+				</QueryClientProvider>
 			</AuthContext.Provider>
 
 			<Toast ref={(ref) => Toast.setRef(ref)} />

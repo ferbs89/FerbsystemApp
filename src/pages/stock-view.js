@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
+import { useQuery } from 'react-query';
 
-import axios from 'axios';
+import { api } from '../services/api';
 import { formatMoney, formatDateDMY } from '../utils/functions';
 
 import BackButton from '../components/BackButton';
@@ -11,39 +12,18 @@ import TabNavigator from '../components/TabNavigator';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function StockView(props) {
-	const params = props.route.params;
-	const [stock, setStock] = useState(null);
-	const [orders, setOrders] = useState([]);
-	const [loading, setLoading] = useState(true);
+	const { params } = props.route;
 	const [refreshing, setRefreshing] = useState(false);
 
-	useEffect(() => {
-		fetchData();
-	}, []);
-
-	useEffect(() => {
-		const unsubscribe = props.navigation.addListener('focus', () => {
-			fetchData();
-		});
-
-		return unsubscribe;
-	}, [props.navigation]);
-
-	async function fetchData() {
-		await axios.get(`https://ferbsystem.vercel.app/api/orders?stock=${params.stock}`)
-		.then(response => {
-			setStock(response.data.stock);
-			setOrders(response.data.orders);
-			setLoading(false);
-
-		}).catch(error => {
-			setStock(null);
-			setOrders([]);
-			setLoading(false);
-		});
-	}
+	const { data, isLoading, refetch } = useQuery(['order', params.stock], async () => {
+		const response = await api.get(`/orders?stock=${params.stock}`);
+		return response.data;
+	}, {
+		staleTime: 1000 * 60 * 10, // 10 minutes
+	});
 
 	function renderHeader() {
+		const { stock } = data;
 		const profit = (stock.qty * stock.marketPrice) - stock.total;
 		const profit_percent = (stock.marketPrice - stock.avg_price) / stock.avg_price * 100;
 
@@ -161,18 +141,24 @@ export default function StockView(props) {
 		);
 	}
 
+	function renderFooter() {
+		return (
+			<View style={{ marginBottom: 16 }} />
+		);
+	}
+
 	return (
 		<View style={styles.container}>
-			{loading ? (
+			{isLoading ? (
 				<Loading />
 			) : (
 				<FlatList
-					data={orders}
+					data={data.orders}
 					keyExtractor={item => item._id.toString()}
 					ListHeaderComponent={renderHeader}
 					renderItem={renderItem}
-					ListFooterComponent={() => <View style={{marginBottom: 16}}></View>}
-					onRefresh={fetchData}
+					ListFooterComponent={renderFooter}
+					onRefresh={refetch}
 					refreshing={refreshing}
 				/>
 			)}

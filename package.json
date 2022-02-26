@@ -24,7 +24,7 @@
     "react-native-screens": "^2.17.1",
     "react-native-toast-message": "^1.4.7",
     "react-native-vector-icons": "^8.1.0",
-    "swr": "^0.4.2"
+    "react-query": "^3.34.16"
   },
   "devDependencies": {
     "@babel/core": "^7.13.0",

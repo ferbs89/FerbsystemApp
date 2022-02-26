@@ -1,40 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { useQuery } from 'react-query';
 
-import axios from 'axios';
+import { api } from '../services/api';
 import { formatMoney, formatDateDMY } from '../utils/functions';
 
 import Loading from '../components/Loading';
 import TabNavigator from '../components/TabNavigator';
 
 export default function Dividends({ navigation }) {
-	const [dividends, setDividends] = useState([]);
-	const [loading, setLoading] = useState(true);
 	const [refreshing, setRefreshing] = useState(false);
 
-	useEffect(() => {
-		fetchData();
-	}, []);
-
-	useEffect(() => {
-		const unsubscribe = navigation.addListener('focus', () => {
-			fetchData();
-		});
-
-		return unsubscribe;
-	}, [navigation]);
-
-	async function fetchData() {
-		await axios.get('https://ferbsystem.vercel.app/api/dividends')
-		.then(response => {
-			setDividends(response.data);
-			setLoading(false);
-
-		}).catch(error => {
-			setDividends([]);
-			setLoading(false);
-		});
-	}
+	const { data: dividends, isLoading, refetch } = useQuery('dividends', async () => {
+		const response = await api.get('/dividends');
+		return response.data;
+	}, {
+		staleTime: 1000 * 60 * 10, // 10 minutes
+	});
 
 	function renderHeader() {
 		return (
@@ -46,42 +28,40 @@ export default function Dividends({ navigation }) {
 
 	function renderItem({ item }) {
 		return (
-			// <TouchableWithoutFeedback onPress={() => navigation.push('OrderEdit', {order: item})}>
-				<View style={styles.itemContainer}>
-					<View style={styles.headerContainer}>
-						<View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center', }}>
-							<Text style={styles.textHeader}>{item.stock}</Text>
-						</View>
+			<View style={styles.itemContainer}>
+				<View style={styles.headerContainer}>
+					<View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center', }}>
+						<Text style={styles.textHeader}>{item.stock}</Text>
+					</View>
 
-						<View style={{flex: 1, alignItems: 'center', }}>
-							<Text style={styles.textTitle}>Data com</Text>
-							<Text style={styles.textHeader}>{formatDateDMY(item.dateWith)}</Text>
-						</View>
+					<View style={{flex: 1, alignItems: 'center', }}>
+						<Text style={styles.textTitle}>Data com</Text>
+						<Text style={styles.textHeader}>{formatDateDMY(item.dateWith)}</Text>
+					</View>
 
-						<View style={{flex: 1, alignItems: 'flex-end', }}>
-							<Text style={styles.textTitle}>Data pagto</Text>
-							<Text style={styles.textHeader}>{formatDateDMY(item.datePay)}</Text>
-						</View>
-					</View>				
-					
-					<View style={{ flexDirection: 'row', padding: 8, }}>
-						<View style={{flex: 1, alignItems: 'flex-start', }}>
-							<Text style={styles.textTitle}>Valor</Text>
-							<Text style={styles.textData}>R$ {formatMoney(item.price)}</Text>
-						</View>
+					<View style={{flex: 1, alignItems: 'flex-end', }}>
+						<Text style={styles.textTitle}>Data pagto</Text>
+						<Text style={styles.textHeader}>{formatDateDMY(item.datePay)}</Text>
+					</View>
+				</View>				
+				
+				<View style={{ flexDirection: 'row', padding: 8, }}>
+					<View style={{flex: 1, alignItems: 'flex-start', }}>
+						<Text style={styles.textTitle}>Valor</Text>
+						<Text style={styles.textData}>R$ {formatMoney(item.price)}</Text>
+					</View>
 
-						<View style={{flex: 1, alignItems: 'center', }}>
-							<Text style={styles.textTitle}>Qtde</Text>
-							<Text style={styles.textData}>{item.qty}</Text>
-						</View>					
+					<View style={{flex: 1, alignItems: 'center', }}>
+						<Text style={styles.textTitle}>Qtde</Text>
+						<Text style={styles.textData}>{item.qty}</Text>
+					</View>					
 
-						<View style={{flex: 1, alignItems: 'flex-end', }}>
-							<Text style={styles.textTitle}>Total</Text>
-							<Text style={styles.textData}>R$ {formatMoney(item.qty * item.price)}</Text>
-						</View>
+					<View style={{flex: 1, alignItems: 'flex-end', }}>
+						<Text style={styles.textTitle}>Total</Text>
+						<Text style={styles.textData}>R$ {formatMoney(item.qty * item.price)}</Text>
 					</View>
 				</View>
-			// </TouchableWithoutFeedback>
+			</View>
 		);
 	}
 
@@ -93,7 +73,7 @@ export default function Dividends({ navigation }) {
 
 	return (
 		<View style={styles.container}>
-			{loading ? (
+			{isLoading ? (
 				<Loading />
 			) : (
 				<View style={styles.content}>
@@ -103,7 +83,7 @@ export default function Dividends({ navigation }) {
 						renderItem={renderItem}
 						ListHeaderComponent={renderHeader}
 						ListFooterComponent={renderFooter}
-						onRefresh={fetchData}
+						onRefresh={refetch}
 						refreshing={refreshing}
 					/>
 				</View>
