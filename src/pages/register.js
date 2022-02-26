@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, Image, TextInput, TouchableWithoutFeedback, Text } from 'react-native';
-import { AuthContext } from '../context';
 
 import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';

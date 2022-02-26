@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableWithoutFeedback } from 'react-native';
-import { AuthContext } from '../context';
+
+import { useAuth } from '../hooks/useAuth';
 
 import lunaris from '../assets/lunaris.png';
 import TabNavigator from '../components/TabNavigator';
@@ -8,8 +9,7 @@ import TabNavigator from '../components/TabNavigator';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function Profile(props) {
-	const user = props.route.params.user; 
-	const { signOut } = useContext(AuthContext);
+	const { user, logout } = useAuth();
 
 	return (
 		<View style={styles.container}>
@@ -31,7 +31,7 @@ export default function Profile(props) {
 					</View>
 				</TouchableWithoutFeedback>
 
-				<TouchableWithoutFeedback onPress={() => signOut()}>
+				<TouchableWithoutFeedback onPress={() => logout()}>
 					<View style={styles.listContainer}>
 						<Icon name="log-out" size={24} color="#17496E" />
 						<Text style={styles.listLabel}>Encerrar sessão</Text>

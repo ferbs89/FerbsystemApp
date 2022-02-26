@@ -1,48 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Image, TextInput, TouchableWithoutFeedback, Text, ActivityIndicator } from 'react-native';
-import { AuthContext } from '../context';
 
-import { api } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
 
 import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';
-import Toast from 'react-native-toast-message';
 
 export default function Login({ navigation }) {
-	const { signIn } = useContext(AuthContext);
+	const { login, loading } = useAuth();
 
 	const [email, setEmail] = useState();
 	const [password, setPassword] = useState();
-	const [loading, setLoading] = useState(false);
-
-	async function handleLogin() {
-		if (!email || !password) {
-			Toast.show({
-				type: 'error',
-				text1: 'Preencha os campos de e-mail e senha.',
-			});
-
-			return;
-		}
-
-		setLoading(true);
-
-		await api.post('/login', { 
-			email, 
-			password,
-		
-		}).then(response => {
-			signIn(response.data);
-
-		}).catch(error => {
-			setLoading(false);
-
-			Toast.show({
-				type: 'error',
-				text1: error.response.data,
-			});
-		});
-	}
 
 	return (
 		<View style={styles.loginContainer}>
@@ -73,7 +41,7 @@ export default function Login({ navigation }) {
 						onChangeText={setPassword}
 					/>
 
-					<TouchableWithoutFeedback onPress={handleLogin}>
+					<TouchableWithoutFeedback onPress={() => login(email, password)}>
 						<View style={styles.button}>
 							<Text style={styles.buttonText}>Entrar</Text>
 						</View>
