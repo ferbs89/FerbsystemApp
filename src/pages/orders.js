@@ -6,12 +6,13 @@ import { api } from '../services/api';
 import { formatMoney, formatDateDMY } from '../utils/functions';
 
 import Loading from '../components/Loading';
+import Error from '../components/Error';
 import TabNavigator from '../components/TabNavigator';
 
 export default function Orders({ navigation }) {
 	const [refreshing, setRefreshing] = useState(false);
 
-	const { data: orders, isLoading, refetch } = useQuery('orders', async () => {
+	const { data: orders, isLoading, refetch, error } = useQuery('orders', async () => {
 		const response = await api.get('/orders');
 		return response.data.orders;
 	}, {
@@ -22,6 +23,12 @@ export default function Orders({ navigation }) {
 		return (
 			<View style={styles.header}>
 				<Text style={styles.headerTitle}>Operações</Text>
+
+				<TouchableWithoutFeedback onPress={() => navigation.push('OrderCreate')}>
+					<View style={styles.headerButton}>
+						<Text style={styles.headerButtonText}>Adicionar nova</Text>
+					</View>
+				</TouchableWithoutFeedback>
 			</View>
 		);
 	}
@@ -75,11 +82,15 @@ export default function Orders({ navigation }) {
 			<View style={{ marginBottom: 16 }} />
 		);
 	}
-	
+
 	return (
 		<View style={styles.container}>
 			{isLoading ? (
 				<Loading />
+
+			) : error ? (
+				<Error />
+			
 			) : (
 				<FlatList
 					data={orders}
@@ -104,8 +115,6 @@ const styles = StyleSheet.create({
 	},
 
 	header: {
-		flexDirection: 'row',
-		alignItems: 'center',
 		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
@@ -114,6 +123,19 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontWeight: 'bold',
 		color: '#05111a',
+	},
+
+	headerButton: {
+		alignItems: 'center',
+		marginTop: 16,
+		padding: 8,
+		borderRadius: 8,
+		backgroundColor: '#17496E',
+	},
+
+	headerButtonText: {
+		color: '#FFF',
+		fontWeight: 'bold',
 	},
 
 	itemContainer: {

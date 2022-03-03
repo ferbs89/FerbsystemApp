@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
 import { useQuery } from 'react-query';
 
 import { api } from '../services/api';
 import { formatMoney, formatDateDMY } from '../utils/functions';
 
 import Loading from '../components/Loading';
+import Error from '../components/Error';
 import TabNavigator from '../components/TabNavigator';
 
 export default function Dividends({ navigation }) {
 	const [refreshing, setRefreshing] = useState(false);
 
-	const { data: dividends, isLoading, refetch } = useQuery('dividends', async () => {
+	const { data: dividends, isLoading, refetch, error } = useQuery('dividends', async () => {
 		const response = await api.get('/dividends');
 		return response.data;
 	}, {
@@ -22,6 +23,12 @@ export default function Dividends({ navigation }) {
 		return (
 			<View style={styles.header}>
 				<Text style={styles.headerTitle}>Dividendos</Text>
+
+				<TouchableWithoutFeedback onPress={() => {}}>
+					<View style={styles.headerButton}>
+						<Text style={styles.headerButtonText}>Adicionar novo</Text>
+					</View>
+				</TouchableWithoutFeedback>
 			</View>
 		);
 	}
@@ -75,6 +82,10 @@ export default function Dividends({ navigation }) {
 		<View style={styles.container}>
 			{isLoading ? (
 				<Loading />
+
+			) : error ? (
+				<Error />
+
 			) : (
 				<View style={styles.content}>
 					<FlatList
@@ -105,8 +116,6 @@ const styles = StyleSheet.create({
 	},
 
 	header: {
-		flexDirection: 'row',
-		alignItems: 'center',
 		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
@@ -115,6 +124,19 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontWeight: 'bold',
 		color: '#05111a',
+	},
+
+	headerButton: {
+		alignItems: 'center',
+		marginTop: 16,
+		padding: 8,
+		borderRadius: 8,
+		backgroundColor: '#17496E',
+	},
+
+	headerButtonText: {
+		color: '#FFF',
+		fontWeight: 'bold',
 	},
 
 	itemContainer: {

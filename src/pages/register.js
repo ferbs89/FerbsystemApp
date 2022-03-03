@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Image, TextInput, TouchableWithoutFeedback, Text } from 'react-native';
+
+import { useAuth } from '../hooks/useAuth';
 
 import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function Register({ navigation }) {
+	const { register } = useAuth();
+
+	const [name, setName] = useState();
+	const [email, setEmail] = useState();
+	const [password, setPassword] = useState();
+
 	return (
 		<View style={styles.loginContainer}>
 			<View style={styles.loginContent}>
@@ -19,20 +27,31 @@ export default function Register({ navigation }) {
 
 				<TextInput
 					style={styles.textInput}
+					autoCapitalize="none"
 					placeholder="Nome"
+					value={name}
+					onChangeText={setName}
 				/>
 
 				<TextInput
 					style={styles.textInput}
+					autoCapitalize="none"
 					placeholder="E-mail"
+					keyboardType="email-address"
+					value={email}
+					onChangeText={setEmail}
 				/>
 
 				<TextInput
 					style={styles.textInput}
+					autoCapitalize="none"
 					placeholder="Senha"
+					secureTextEntry={true}
+					value={password}
+					onChangeText={setPassword}
 				/>
 
-				<TouchableWithoutFeedback>
+				<TouchableWithoutFeedback onPress={() => register(name, email, password)}>
 					<View style={styles.button}>
 						<Text style={styles.buttonText}>Cadastrar</Text>
 					</View>

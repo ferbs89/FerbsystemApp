@@ -5,13 +5,14 @@ import { useQuery } from 'react-query';
 import { api } from '../services/api';
 
 import Loading from '../components/Loading';
+import Error from '../components/Error';
 import Stock from '../components/Stock';
 import TabNavigator from '../components/TabNavigator';
 
 export default function Stocks({ navigation }) {
 	const [refreshing, setRefreshing] = useState(false);
 
-	const { data: stocks, isLoading, refetch } = useQuery('stocks', async () => {
+	const { data: stocks, isLoading, refetch, error } = useQuery('stocks', async () => {
 		const response = await api.get('/stocks');
 		return response.data.stocks;
 	}, {
@@ -38,10 +39,22 @@ export default function Stocks({ navigation }) {
 		);
 	}
 
+	function renderEmpty() {
+		return (
+			<View style={styles.emptyContainer}>
+				<Text style={styles.emptyText}>Cadastre suas operações para acompanhar a evolução de sua carteira.</Text>
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
 			{isLoading ? (
 				<Loading />
+
+			) : error ? (
+				<Error />
+			
 			) : (
 				<FlatList
 					data={stocks}
@@ -49,6 +62,7 @@ export default function Stocks({ navigation }) {
 					renderItem={renderItem}
 					ListHeaderComponent={renderHeader}
 					ListFooterComponent={renderFooter}
+					ListEmptyComponent={renderEmpty}
 					onRefresh={refetch}
 					refreshing={refreshing}
 				/>
@@ -76,5 +90,14 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontWeight: 'bold',
 		color: '#05111a',
+	},
+
+	emptyContainer: {
+		paddingTop: 16,
+		paddingHorizontal: 16,
+	},
+
+	emptyText: {
+		lineHeight: 24,
 	},
 });

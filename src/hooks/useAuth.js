@@ -37,8 +37,6 @@ export function AuthProvider({ children }) {
 			return;
 		}
 
-		setLoading(true);
-
 		await api.post('/login', { 
 			email, 
 			password,
@@ -53,9 +51,6 @@ export function AuthProvider({ children }) {
 				type: 'error',
 				text1: error.response.data,
 			});
-
-		}).finally(() => {
-			setLoading(false);
 		});
 	}
 
@@ -69,8 +64,34 @@ export function AuthProvider({ children }) {
 		});
 	}
 
+	async function register(name, email, password) {
+		if (!name || !email || !password) {
+			Toast.show({
+				type: 'error',
+				text1: 'Todos os campos são obrigatórios.',
+			});
+
+			return;
+		}
+
+		await api.post('/register', {
+			name,
+			email,
+			password,
+
+		}).then(response => {
+			setUser(response.data);
+
+		}).catch(error => {
+			Toast.show({
+				type: 'error',
+				text1: error.response.data,
+			});
+		});
+	}
+
 	return (
-		<AuthContext.Provider value={{ user, loading, login, logout }}>
+		<AuthContext.Provider value={{ user, loading, login, logout, register }}>
 			{children}
 		</AuthContext.Provider>
 	)

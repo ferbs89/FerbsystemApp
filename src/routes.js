@@ -33,7 +33,7 @@ export function Routes() {
 						<RootStack.Screen name="Stocks" 		component={Stocks} 		/>
 						<RootStack.Screen name="Orders" 		component={Orders} 		/>
 						<RootStack.Screen name="Dividends" 		component={Dividends} 	/>
-						<RootStack.Screen name="Profile" 		component={Profile} 	initialParams={{ user }} />
+						<RootStack.Screen name="Profile" 		component={Profile} 	/>
 
 						<RootStack.Screen name="StockView" 		component={StockView} 	/>
 						<RootStack.Screen name="OrderCreate" 	component={OrderCreate}	/>

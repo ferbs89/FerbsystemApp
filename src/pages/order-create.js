@@ -47,18 +47,18 @@ export default function OrderCreate(props) {
 
 					<TextInput
 						style={styles.textInput}
+						keyboardType="numeric"
 						value={qty}
 						onChangeText={setQty}
-						keyboardType="numeric"
 					/>
 
 					<Text style={styles.labelInput}>Preço</Text>
 
 					<TextInput
 						style={styles.textInput}
+						keyboardType="numeric"
 						value={price}
 						onChangeText={setPrice}
-						keyboardType="numeric"
 					/>
 				</View>
 			</ScrollView>

@@ -7,54 +7,50 @@ import lunaris from '../assets/lunaris.png';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function Login({ navigation }) {
-	const { login, loading } = useAuth();
+	const { login } = useAuth();
 
 	const [email, setEmail] = useState();
 	const [password, setPassword] = useState();
 
 	return (
-		<View style={styles.loginContainer}>
-			{loading ? (
-				<ActivityIndicator color="#FFF" size="large" />
-			) : (
-				<View style={styles.loginContent}>
-					<View style={styles.logoContainer}>
-						<Image style={styles.logoImg} source={lunaris} />
-						<Text style={styles.logoText}>Lunaris</Text>
-					</View>
-
-					<TextInput
-						style={styles.textInput}
-						autoCapitalize="none"
-						placeholder="E-mail"
-						keyboardType="email-address"
-						value={email}
-						onChangeText={setEmail}
-					/>
-
-					<TextInput
-						style={styles.textInput}
-						autoCapitalize="none"
-						placeholder="Senha"
-						secureTextEntry={true}
-						value={password}
-						onChangeText={setPassword}
-					/>
-
-					<TouchableWithoutFeedback onPress={() => login(email, password)}>
-						<View style={styles.button}>
-							<Text style={styles.buttonText}>Entrar</Text>
-						</View>
-					</TouchableWithoutFeedback>
-
-					<TouchableWithoutFeedback onPress={() => navigation.navigate('Register')}>
-						<View style={styles.buttonOutline}>
-							<Icon name="log-in" size={24} color="#17496E" />
-							<Text style={styles.buttonOutlineText}>Não tenho cadastro</Text>
-						</View>
-					</TouchableWithoutFeedback>
+		<View style={styles.loginContainer}>			
+			<View style={styles.loginContent}>
+				<View style={styles.logoContainer}>
+					<Image style={styles.logoImg} source={lunaris} />
+					<Text style={styles.logoText}>Lunaris</Text>
 				</View>
-			)}
+
+				<TextInput
+					style={styles.textInput}
+					autoCapitalize="none"
+					placeholder="E-mail"
+					keyboardType="email-address"
+					value={email}
+					onChangeText={setEmail}
+				/>
+
+				<TextInput
+					style={styles.textInput}
+					autoCapitalize="none"
+					placeholder="Senha"
+					secureTextEntry={true}
+					value={password}
+					onChangeText={setPassword}
+				/>
+
+				<TouchableWithoutFeedback onPress={() => login(email, password)}>
+					<View style={styles.button}>
+						<Text style={styles.buttonText}>Entrar</Text>
+					</View>
+				</TouchableWithoutFeedback>
+
+				<TouchableWithoutFeedback onPress={() => navigation.navigate('Register')}>
+					<View style={styles.buttonOutline}>
+						<Icon name="log-in" size={24} color="#17496E" />
+						<Text style={styles.buttonOutlineText}>Não tenho cadastro</Text>
+					</View>
+				</TouchableWithoutFeedback>
+			</View>
 		</View>
 	);
 }
